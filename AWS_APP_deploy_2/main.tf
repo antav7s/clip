@@ -4,6 +4,10 @@ resource "aws_key_pair" "my-key" {
   public_key = file("mykey.pub")
 }
 
+data "template_file" "init2" {
+  template = file("mysql.sh.tpl")
+}
+
 resource "aws_instance" "clip-mysql" {
   ami           = var.AMIS[var.REGION] #North Carlifornia region.
   instance_type = "t2.medium"          #free tier.
@@ -13,29 +17,10 @@ resource "aws_instance" "clip-mysql" {
   #vpc_security_group_ids = ["sg-00102b2ace39a97c4"]
   #vpc_security_group_ids = [aws_security_group.clip_mysql-sg.id] #Allow SSH connection from my ip.
   security_groups = ["clip_mysql-sg"]
+  user_data       = data.template_file.init2.rendered
   tags = {
     Name = "clip-mysql"
   }
-
-  provisioner "file" {
-    source      = "mysql.sh"
-    destination = "/tmp/mysql.sh"
-  }
-
-  provisioner "remote-exec" {
-    inline = [
-      "chmod u+x /tmp/mysql.sh",
-      "sudo /tmp/mysql.sh"
-    ]
-  }
-
-  connection {
-    user        = var.USER
-    private_key = file("mykey")
-    host        = self.public_ip
-  }
-
-
 }
 
 
