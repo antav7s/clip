@@ -1,5 +1,4 @@
-#This will create a VPC with private subnets same region/AZ for EC2 & MySQL RDS on AWS using Terraform.
-#sslajdha
+#This will create a VPC with private subnets same region/AZ for EC2 & MySQL RDS on AWS using Terraform
 resource "aws_key_pair" "my-key" {
   key_name   = "mykey"
   public_key = file("mykey.pub")
